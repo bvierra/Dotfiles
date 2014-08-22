@@ -54,6 +54,8 @@ imap <F3> <ESC>^iwarn Data::Dumper::Streamer->Dump( );<ESC>
 " turn modeline on
 set modeline
 
+execute pathogen#infect()
+
 
 
 " functions
