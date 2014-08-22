@@ -1,0 +1,93 @@
+" nocompatible indent syntax hilight on
+set nocompatible | filetype indent plugin on | syn on
+
+" use visual bell instead of beeping
+set vb
+
+" incremental search
+set incsearch
+
+" autoindent
+autocmd FileType perl set autoindent|set smartindent
+
+" 4 space tabs
+autocmd FileType perl set tabstop=2|set shiftwidth=2|set expandtab|set softtabstop=2
+
+" show matching brackets
+autocmd FileType perl set showmatch
+
+" show line numbers
+autocmd FileType perl set number
+
+" check perl code with :make
+autocmd FileType perl set makeprg=perl\ -c\ %\ $*
+autocmd FileType perl set errorformat=%f:%l:%m
+autocmd FileType perl set autowrite
+
+" make tab in v mode ident code
+vmap <tab> >gv
+vmap <s-tab> <gv
+
+" make tab in normal mode ident code
+nmap <tab> I<tab><esc>
+nmap <s-tab> ^i<bs><esc>
+
+set pastetoggle=<F11>
+
+" my perl includes pod
+let perl_include_pod = 1
+
+" syntax color complex things like @{${"foo"}}
+let perl_extended_vars = 1
+
+" Tidy selected lines (or entire file) with _t:
+nnoremap <silent> _t :%!perltidy -q<Enter>
+vnoremap <silent> _t :!perltidy -q<Enter>
+
+" let F3 insert debug with DDS
+imap <F3> <ESC>^iwarn Data::Dumper::Streamer->Dump( );<ESC>
+
+" folding
+"let perl_fold=1
+"let perl_fold_blocks=1
+
+" turn modeline on
+set modeline
+
+
+
+" functions
+fun! EnsureVamIsOnDisk(plugin_root_dir)
+   let vam_autoload_dir = a:plugin_root_dir.'/vim-addon-manager/autoload'
+   if isdirectory(vam_autoload_dir)
+       return 1
+   else
+       if 1 == confirm("Clone VAM into ".a:plugin_root_dir."?","&Y\n&N")
+           call mkdir(a:plugin_root_dir, 'p')
+           execute '!git clone --depth=1 git://github.com/MarcWeber/vim-addon-manager '.
+                          \       shellescape(a:plugin_root_dir, 1).'/vim-addon-manager'
+           " VAM runs helptags automatically when you install or update 
+           " plugins
+           exec 'helptags '.fnameescape(a:plugin_root_dir.'/vim-addon-manager/doc')
+       endif
+       return isdirectory(vam_autoload_dir)
+   endif
+endfun
+
+fun! SetupVAM()
+  let c = get(g:, 'vim_addon_manager', {})
+  let g:vim_addon_manager = c
+  let c.plugin_root_dir = expand('$HOME', 1) . '/.vim/vim-addons'
+  if !EnsureVamIsOnDisk(c.plugin_root_dir)
+    echohl ErrorMsg | echomsg "No VAM found!" | echohl NONE
+    return
+  endif
+  let &rtp.=(empty(&rtp)?'':',').c.plugin_root_dir.'/vim-addon-manager'
+  if !isdirectory(c.plugin_root_dir.'/vim-addon-manager/autoload')
+    execute '!git clone --depth=1 git://github.com/MarcWeber/vim-addon-manager '
+        \       shellescape(c.plugin_root_dir.'/vim-addon-manager', 1)
+  endif
+  call vam#ActivateAddons([], {'auto_install' : 0})
+endfun
+
+call SetupVAM()
