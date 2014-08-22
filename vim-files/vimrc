@@ -1,6 +1,9 @@
 " nocompatible indent syntax hilight on
 set nocompatible | filetype indent plugin on | syn on
 
+" Pathogen
+execute pathogen#infect()
+
 " use visual bell instead of beeping
 set vb
 
@@ -54,7 +57,6 @@ imap <F3> <ESC>^iwarn Data::Dumper::Streamer->Dump( );<ESC>
 " turn modeline on
 set modeline
 
-execute pathogen#infect()
 
 
 
