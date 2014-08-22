@@ -4,3 +4,6 @@
 [submodule "vim-files/bundle/vim-perl"]
 	path = vim-files/bundle/vim-perl
 	url = https://github.com/vim-perl/vim-perl.git
+[submodule "vim-files/bundle/vim-colors-solarized"]
+	path = vim-files/bundle/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized.git
