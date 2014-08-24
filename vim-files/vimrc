@@ -2,7 +2,13 @@
 set nocompatible | filetype indent plugin on | syn on
 
 " Pathogen
-execute pathogen#infect()
+ execute pathogen#infect()
+
+" Color Theme Solarized - Dark
+syntax enable
+set background=dark
+colorscheme solarized
+
 
 " use visual bell instead of beeping
 set vb
@@ -63,7 +69,8 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " Toggle nerdtree with F2
 map <F2> :NERDTreeToggle<CR>
-
+" Close vim if only nerdtree is open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 
 " functions
