@@ -13,3 +13,6 @@
 [submodule "vim-files/bundle/mojo.vim"]
 	path = vim-files/bundle/mojo.vim
 	url = https://github.com/yko/mojo.vim.git
+[submodule "vim-files/bundle/vim-easytags"]
+	path = vim-files/bundle/vim-easytags
+	url = https://github.com/xolox/vim-easytags.git
