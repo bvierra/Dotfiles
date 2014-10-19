@@ -73,6 +73,8 @@ map <F2> :NERDTreeToggle<CR>
 " Close vim if only nerdtree is open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
+" mojo.vim
+let mojo_highlight_data = 1
 
 " functions
 fun! EnsureVamIsOnDisk(plugin_root_dir)
