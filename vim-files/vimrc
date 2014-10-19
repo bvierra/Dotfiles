@@ -2,7 +2,8 @@
 set nocompatible | filetype indent plugin on | syn on
 
 " Pathogen
- execute pathogen#infect()
+execute pathogen#infect()
+call pathogen#helptags() 
 
 " Color Theme Solarized - Dark
 syntax enable
