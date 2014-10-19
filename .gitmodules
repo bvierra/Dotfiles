@@ -10,3 +10,6 @@
 [submodule "vim-files/bundle/perl-support.vim"]
 	path = vim-files/bundle/perl-support.vim
 	url = https://github.com/vim-scripts/perl-support.vim.git
+[submodule "vim-files/bundle/mojo.vim"]
+	path = vim-files/bundle/mojo.vim
+	url = https://github.com/yko/mojo.vim.git
