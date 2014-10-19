@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-git update
+git pull
 git submodule update --init
 
 mkdir ~/.vim
