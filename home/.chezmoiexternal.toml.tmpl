@@ -16,8 +16,3 @@
   url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-%s_%s.tar.gz" .chezmoi.os .chezmoi.arch) | quote }}
   executable = true
   path = "fzf"
-
-[".tmux/kube-tmux"]
-  type = "git-repo"
-  url = "https://github.com/jonmosco/kube-tmux.git"
-  refreshPeriod = "168h"
