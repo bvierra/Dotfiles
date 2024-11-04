@@ -1,0 +1,92 @@
+{{/* boolean feature tags */}}
+{{- $ephemeral := false -}}{{/* true if this machine is ephemeral */}}
+{{- $personal := false -}}
+{{- $secrets := false -}}{{/* true if this machine store secrets with gpg and pass */}}
+
+{{/* vars */}}
+{{- $name := "" -}}
+{{- $email := "" -}}
+{{- $key_sign := "" -}}
+{{- $editor := "vim" -}}
+{{- $username := .chezmoi.username -}}
+{{- $hostname := .chezmoi.hostname -}}
+{{- "" -}}
+
+
+
+{{/* set OS to osID */}}
+{{- $osID := .chezmoi.os -}}
+{{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
+{{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{/* set isWSL to true if in WSL, otherwise false */}}
+{{- $isWSL := false -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{-     $isWSL = true -}}
+{{-   end -}}
+{{- end -}}
+
+
+{{- /* If hostname is equal to blackbox then this is a personal computer */ -}}
+
+
+
+{{- if eq $username "bvierra" -}}
+{{-   if eq $hostname "BlackBox-wsl" -}}
+{{-     $personal = true -}}
+{{-   end -}}
+{{- end -}}
+
+{{- /* Set standard values for required config options if personal */ -}}
+{{- if eq $personal true -}}
+{{-   $name = "Billy Vierra" -}}
+{{-   $email = "bvierra@gmail.com" -}}
+{{-   $key_sign = "C76E7D8E3369C6A4" -}}
+{{-   $editor = "code --wait" -}}
+{{- else -}}
+{{- /* If name was previously set, reuses it */ -}}
+{{-   if hasKey . "name" -}}
+{{-     $name = .name -}}
+{{- /* Otherwise, if running interactively, prompts for a name */ -}}
+{{-   else if stdinIsATTY -}}
+{{-     $name = promptString "name" "Your Name" -}}
+{{-   end -}}
+
+{{- /* Does the same for the email */ -}}
+{{-   if hasKey . "email" -}}
+{{-     $email = .email -}}
+{{-   else if stdinIsATTY -}}
+{{-     $email = promptString "email" "your@email.com" -}}
+{{-   end -}}
+
+{{- /* Does the same for the email */ -}}
+{{-   if hasKey . "editor" -}}
+{{-     $editor = .editor -}}
+{{-   else if stdinIsATTY -}}
+{{-     $editor = promptString "editor" "vim" -}}
+{{-   end -}}
+{{- end -}}
+
+
+
+{{- if stdinIsATTY -}}
+{{-   writeToStdout "💡 Tip: you can re-enter your name and email with `chezmoi init --data=false`.\n" -}}
+{{- end -}}
+
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
+[data]
+  name = {{ $name | quote }}
+  personal = {{ $personal }}
+  email = {{ $email | quote }}
+  key_sign = {{ $key_sign | quote }}
+  osid = {{ $osID | quote }}
+  isWSL = {{ $isWSL }}
+  editor = {{ $editor | quote }}
+
+
+[scriptEnv]
+  KREW_ROOT = "${HOME}/.local/share/krew"
+

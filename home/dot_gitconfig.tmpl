@@ -1,0 +1,28 @@
+[user]
+	email = {{ .email }}
+	name = {{ .name }}
+{{- if .key_sign }}
+	signingkey = {{ .key_sign }}
+{{- end }}
+
+{{ if .key_sign }}
+[commit]
+	gpgsign = true
+{{ end }}
+
+[core]
+	editor = {{ .editor }}
+
+[fetch]
+	prune = true
+
+[init]
+  defaultBranch = main
+
+[core]
+  editor = code --wait
+
+{{- if eq .chezmoi.username "bvierra" }}
+[url "git@github.com:bvierra"]
+  insteadOf = https://github.com/bvierra
+{{ end }}

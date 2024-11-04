@@ -1,0 +1,23 @@
+{{ $packerVersion := "1.11.2" -}}
+{{ $kubectlVersion := "1.31.2" -}}
+
+[".local/bin/packer"]
+  type = "archive-file"
+  url = "https://releases.hashicorp.com/packer/{{ $packerVersion }}/packer_{{ $packerVersion }}_{{ .chezmoi.os }}_{{ .chezmoi.arch }}.zip"
+  path = "packer"
+
+[".local/bin/kubectl"]
+  type = "file"
+  url = "https://dl.k8s.io/release/v{{ $kubectlVersion }}/bin/linux/amd64/kubectl"
+  executable = true
+
+[".local/bin/fzf"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-%s_%s.tar.gz" .chezmoi.os .chezmoi.arch) | quote }}
+  executable = true
+  path = "fzf"
+
+[".tmux/kube-tmux"]
+  type = "git-repo"
+  url = "https://github.com/jonmosco/kube-tmux.git"
+  refreshPeriod = "168h"
