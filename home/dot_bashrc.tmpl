@@ -20,6 +20,10 @@ shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
 
+# 📢 Append commands to history file immediately (not at end of session).
+#
+export PROMPT_COMMAND='history -a'
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -85,7 +89,6 @@ pathappend() {
   done
 }
 
-
 pathprepend() {
   for ((i=$#; i>0; i--)); 
   do
@@ -102,7 +105,6 @@ pathprepend "${HOME}/.local/bin"
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
 if [ -f ~/.bash_aliases ]; then
     # shellcheck disable=SC1090
     . ~/.bash_aliases
@@ -124,17 +126,26 @@ fi
 source <(kubectl completion bash)
 complete -F __start_kubectl k
 
-
+{{ if .key_sign -}}
+GPGKEY={{ .key_sign | quote }}
 GPG_TTY=$(tty)
-export GPG_TTY
-export EDITOR=vim
-SSH_AUTH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh"
-export SSH_AUTH_SOCK
+export GPGKEY GPG_TTY
+{{- end }}
+
+{{ if eq .editor "code" -}}
+EDITOR="code --wait"
+{{ else if ne .editor "" -}}
+EDITOR="{{ .editor | quote }}"
+{{ else -}}
+EDITOR="vim"
+{{ end -}}
+export EDITOR
+
+{{- /* SSH_AUTH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh" */ -}}
+{{- /* export SSH_AUTH_SOCK */ -}}
 
 # Sets kubectl krew home dir to ~/.local/share/krew 
 export KREW_ROOT="${HOME}/.local/share/krew"
 pathprepend "${KREW_ROOT}/bin"
 
 eval "$(direnv hook bash)"
-
-

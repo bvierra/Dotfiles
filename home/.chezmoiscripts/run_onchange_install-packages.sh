@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sudo apt install direnv
+sudo apt install direnv jq
 
 # Install kubectl krew
 # TODO: This is the default installation method. Change it to use templates

@@ -7,11 +7,16 @@
 {{- $name := "" -}}
 {{- $email := "" -}}
 {{- $key_sign := "" -}}
-{{- $editor := "vim" -}}
 {{- $username := .chezmoi.username -}}
 {{- $hostname := .chezmoi.hostname -}}
 {{- "" -}}
 
+{{/* set editor, diff, and merge to code by default */}}
+{{/* you will be prompted for these values if they are not set */}}
+{{/* if you set any of these to code, then it will automatically setup the command with the correct args */}}
+{{- $editor := "" -}}
+{{- $diff := "" -}}
+{{- $merge := "" -}}
 
 
 {{/* set OS to osID */}}
@@ -44,7 +49,9 @@
 {{-   $name = "Billy Vierra" -}}
 {{-   $email = "bvierra@gmail.com" -}}
 {{-   $key_sign = "C76E7D8E3369C6A4" -}}
-{{-   $editor = "code --wait" -}}
+{{-   $editor = "code" -}}
+{{-   $diff = "code" -}}
+{{-   $merge = "code" -}}
 {{- else -}}
 {{- /* If name was previously set, reuses it */ -}}
 {{-   if hasKey . "name" -}}
@@ -85,8 +92,35 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   osid = {{ $osID | quote }}
   isWSL = {{ $isWSL }}
   editor = {{ $editor | quote }}
+  diff = {{ $diff | quote }}
+  merge = {{ $merge | quote }}
 
+{{ if eq $editor "code" -}}
+[edit]
+  command = "code"
+  args = ["--wait"]
+{{ else if ne $editor "" -}}
+[editor]
+  command = {{ $editor | quote }}
+{{ end }}
 
-[scriptEnv]
-  KREW_ROOT = "${HOME}/.local/share/krew"
+{{ if eq $diff "code" -}}
+[diff]
+  command = "code"
+  args = ["--wait", "--diff", "--new-window"]
+{{ else if ne $diff "" -}}
+[diff]
+  command = {{ $diff | quote }}
+{{ end }}
 
+{{ if eq $merge "code" -}}
+[merge]
+  command = "bash"
+  args = [
+    "-c",
+    "cp {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base && code --new-window --wait --merge {{ "{{" }} .Destination {{ "}}" }} {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base {{ "{{" }} .Source {{ "}}" }}"
+  ]
+{{ else if ne $merge "" -}}
+[merge]
+  command = {{ $merge | quote }}
+{{ end }}
