@@ -141,9 +141,6 @@ EDITOR="vim"
 {{ end -}}
 export EDITOR
 
-{{- /* SSH_AUTH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh" */ -}}
-{{- /* export SSH_AUTH_SOCK */ -}}
-
 # Sets kubectl krew home dir to ~/.local/share/krew 
 export KREW_ROOT="${HOME}/.local/share/krew"
 pathprepend "${KREW_ROOT}/bin"
