@@ -3,9 +3,6 @@
         "editorconfig.editorconfig",
         "tamasfe.even-better-toml",
         "timonwong.shellcheck",
-        "redhat.ansible",
-        "aaron-bond.better-comments",
-        "4ops.packer",
-        "pjmiravalle.terraform-advanced-syntax-highlighting"
+        "aaron-bond.better-comments"
     ]
 }
