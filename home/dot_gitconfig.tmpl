@@ -11,7 +11,7 @@
 {{ end }}
 
 [core]
-	editor = {{ .editor }}
+	editor = {{ .editor | quote }}
 
 [fetch]
 	prune = true
@@ -21,6 +21,7 @@
 
 [core]
   editor = code --wait
+  excludesfile = ~/.gitignore_global
 
 {{- if eq .chezmoi.username "bvierra" }}
 [url "git@github.com:bvierra"]
