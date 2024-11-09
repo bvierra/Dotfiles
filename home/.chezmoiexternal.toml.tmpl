@@ -16,3 +16,22 @@
   url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-%s_%s.tar.gz" .chezmoi.os .chezmoi.arch) | quote }}
   executable = true
   path = "fzf"
+
+[".local/bin/glow"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "charmbracelet/glow" (printf "glow_*_Linux_x86_64.tar.gz") | quote }}
+  executable = true
+  stripComponents = 1
+  path = "glow"
+
+[".local/bin/act"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "nektos/act" (printf "act_Linux_x86_64.tar.gz") | quote }}
+  executable = true
+  path = "act"
+
+[".local/bin/fabric"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "danielmiessler/fabric" (printf "fabric-%s-%s" .chezmoi.os .chezmoi.arch) | quote }}
+  executable = true
+
