@@ -11,7 +11,7 @@
 {{ end }}
 
 [core]
-	editor = {{ .editor | quote }}
+	editor = {{ .editor --wait | quote }}
 
 [fetch]
 	prune = true
