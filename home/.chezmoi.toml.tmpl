@@ -26,12 +26,7 @@
 {{- end -}}
 
 {{/* set isWSL to true if in WSL, otherwise false */}}
-{{- $isWSL := false -}}
-{{- if eq .chezmoi.os "linux" -}}
-{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
-{{-     $isWSL = true -}}
-{{-   end -}}
-{{- end -}}
+{{- $wsl := or (env "WSL_DISTRO_NAME") (env "IS_WSL") | not | not -}}
 
 
 {{- /* If hostname is equal to blackbox then this is a personal computer */ -}}
