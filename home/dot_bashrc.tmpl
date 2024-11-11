@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 # ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
+# Repo: https://github.com/bvierra/Dotfiles/blob/master/home/dot_bashrc.tmpl
+# shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
 
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
       *) return;;
 esac
+
+#set -o errexit   # abort on nonzero exitstatus
+#set -o nounset   # abort on unbound variable
+#set -o pipefail  # don't hide errors within pipes
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -33,16 +38,17 @@ shopt -s checkwinsize
 #shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+if [[ -z "${debian_chroot:-}" ]] && [[ -r /etc/debian_chroot ]]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
+case "${TERM}" in
     xterm-color|*-256color) color_prompt=yes;;
+    *) color_prompt=no;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -50,8 +56,8 @@ esac
 # should be on the output of commands, not on the prompt
 #force_color_prompt=yes
 
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+if [[ -n "${force_color_prompt}" ]]; then
+    if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
 	# We have color support; assume it's compliant with Ecma-48
 	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
 	# a case would tend to support setf rather than setaf.)
@@ -61,7 +67,7 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-if [ "$color_prompt" = yes ]; then
+if [[ "${color_prompt}" = yes ]]; then
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
@@ -69,9 +75,9 @@ fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
-case "$TERM" in
+case "${TERM}" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    PS1="\[\e]0;${debian_chroot:+(${debian_chroot})}\u@\h: \w\a\]${PS1}"
     ;;
 *)
     ;;
@@ -80,24 +86,30 @@ esac
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-pathappend() {
-  for ARG in "$@"
-  do
-    if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
-        PATH="${PATH:+"$PATH:"}$ARG"
-    fi
-  done
-}
+# Specify basedir-spec variables to make them easier to use in bashrc scripts
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
+XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export XDG_CACHE_HOME XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_RUNTIME_DIR
 
-pathprepend() {
-  for ((i=$#; i>0; i--)); 
-  do
-    ARG=${!i}
-    if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
-        PATH="$ARG${PATH:+":$PATH"}"
-    fi
-  done
-}
+# Use a slim bashrc.d with includes for individual programs
+BASHRC_DIR="${XDG_CONFIG_HOME}/bash/bashrc.d"
+if [[ -d "${BASHRC_DIR}" ]]; then
+    for file in "${BASHRC_DIR}"/*.sh; do
+        if [[ -r "${file}" ]]; then
+            # shellcheck disable=SC1090
+            . "${file}"
+        fi
+    done
+    unset file
+fi
+
+export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}"/bash/bash-completion/bash_completion
+
+
+
 
 pathprepend "${HOME}/.local/bin"
 
@@ -105,7 +117,7 @@ pathprepend "${HOME}/.local/bin"
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-if [ -f ~/.bash_aliases ]; then
+if [[ -f ~/.bash_aliases ]]; then
     # shellcheck disable=SC1090
     . ~/.bash_aliases
 fi
@@ -114,35 +126,32 @@ fi
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
+  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
     . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
+  elif [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
   fi
 fi
 
-# bash completions for commands that are generated from executables - This is located after .bash_aliases because since some of the commands are aliased, they need to be defined first
-# shellcheck disable=SC1090
-source <(kubectl completion bash)
-complete -F __start_kubectl k
-
-{{ if .key_sign -}}
-GPGKEY={{ .key_sign | quote }}
+# {{ if .key_sign -}}
+GPGKEY=# {{ .key_sign | quote }}
 GPG_TTY=$(tty)
 export GPGKEY GPG_TTY
-{{- end }}
+# {{- end }}
 
-{{ if eq .editor "code" -}}
+# {{ if eq .editor "code" -}}
 EDITOR="code --wait"
-{{ else if ne .editor "" -}}
+# {{ else if ne .editor "" -}}
 EDITOR="{{ .editor | quote }}"
-{{ else -}}
+# {{ else -}}
 EDITOR="vim"
-{{ end -}}
+# {{ end -}}
 export EDITOR
 
-# Sets kubectl krew home dir to ~/.local/share/krew 
+# Sets kubectl krew home dir to ~/.local/share/krew
 export KREW_ROOT="${HOME}/.local/share/krew"
 pathprepend "${KREW_ROOT}/bin"
 
 eval "$(direnv hook bash)"
+
+# vim: set ft=bash
