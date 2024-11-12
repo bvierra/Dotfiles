@@ -35,3 +35,20 @@
   url = {{ gitHubLatestReleaseAssetURL "danielmiessler/fabric" (printf "fabric-%s-%s" .chezmoi.os .chezmoi.arch) | quote }}
   executable = true
 
+[".local/bin/delta"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "dandavison/delta" (printf "delta-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
+  executable = true
+  stripComponents = 1
+  path = "delta"
+
+{{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
+["{{ $externalScriptsDir }}/install-distrobox.sh"]
+  type = "file"
+  url = "https://raw.githubusercontent.com/89luca89/distrobox/main/install"
+  executable = true
+
+["{{ $externalScriptsDir }}/uninstall-distrobox.sh"]
+  type = "file"
+  url = "https://raw.githubusercontent.com/89luca89/distrobox/main/uninstall"
+  executable = true
