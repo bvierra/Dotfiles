@@ -3,6 +3,8 @@
         "editorconfig.editorconfig",
         "tamasfe.even-better-toml",
         "timonwong.shellcheck",
-        "aaron-bond.better-comments"
+        "aaron-bond.better-comments",
+        "mads-hartmann.bash-ide-vscode",
+        "chrislajoie.vscode-modelines"
     ]
 }

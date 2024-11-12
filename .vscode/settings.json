@@ -1,0 +1,13 @@
+{
+    "autoSnippet.snippets": [
+        {
+            "pattern": "*.sh",
+            "snippet": "header-bash"
+        }
+    ],
+    "shellcheck.logLevel": "info",
+    "shellcheck.useWorkspaceRootAsCwd": true,
+    "files.associations": {
+        "*.sh.tmpl": "shellscript"
+    }
+}

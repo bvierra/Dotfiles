@@ -1,0 +1,69 @@
+{
+	"chezmoi-incl-scripts-library": {
+		"prefix": "chezmoi-incl-scripts-library",
+		"description": "Includes the scripts-library both in chezmoi as well as for ShellCheck",
+		"scope": "shellscript",
+		"body": [
+			"# {{ include (joinPath .chezmoi.sourceDir \".chezmoitemplates/scripts-library\") }}",
+			"# The following line is for ShellCheck to correctly identify the above included library",
+			"true || source home/.chezmoitemplates/scripts-library"
+		]
+	},
+	"fn-comment": {
+		"prefix": "fn-comment",
+		"description": "Function Comment",
+		"scope": "shellscript",
+		"body": [
+			"#######################################",
+			"# ${1:Description}",
+			"# Globals:",
+			"#   ${2:None}",
+			"# Arguments:",
+			"#   ${3:None}",
+			"# Outputs:",
+			"#   ${4:0 if no error, non-zero on error}",
+			"#######################################"
+		]
+	},
+	// Place your chezmoi workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+  "header-bash": {
+    "prefix": "header-bash",
+    "body": [
+		"#!/usr/bin/env bash",
+		"# !! This file is managed by chezmoi !!",
+		"# !! Any changes created may be overwritten on next run !!",
+		"# Repo: https://github.com/bvierra/Dotfiles/",
+		"#",
+		"# shellcheck shell=bash"
+	],
+    "description": "Bash script header"
+  },
+  "header-bash-template": {
+    "prefix": "header-bash-template",
+    "body": [
+		"#!/usr/bin/env bash",
+		"# !! This file is managed by chezmoi !!",
+		"# !! Any changes created may be overwritten on next run !!",
+		"# Repo: https://github.com/bvierra/Dotfiles/",
+		"#",
+		"# shellcheck shell=bash",
+		"# chezmoi:template:left-delimiter=\"# {{\" right-delimiter=}}"
+	],
+    "description": "Templated bash script header"
+  }
+}
