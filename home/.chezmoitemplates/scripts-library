@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# 󰈅 Repo: https://github.com/bvierra/Dotfiles/blob/master/home/.chezmoitemplates/scripts-library
+# 󰈅󰈅 This file is managed by chezmoi. Any
+# Repo: https://github.com/bvierra/Dotfiles/blob/master/home/.chezmoitemplates/scripts-library 󰈅󰈅
 # shellcheck shell=bash
+#
 # Original source: https://github.com/felipecrs/dotfiles/blob/master/home/.chezmoitemplates/scripts-library
 
 
@@ -71,6 +73,10 @@ function log_error() {
 
 function log_info() {
   log_blue "ℹ️" "$@"
+}
+
+function log_ok() {
+  log_green "✅" "$@"
 }
 
 function error() {
