@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# !! This file is managed by chezmoi !!
+# !! Any changes created may be overwritten on next run !!
+# Repo: https://github.com/bvierra/Dotfiles/
+#
+# shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+#
+# SHA256SUM of the latest tag of the distrobox repo
+# This is used to check if the distrobox repo has been updated
+# if it has, then this script is ran to install the latest version
+# {{ $distroboxVersion := ( (gitHubLatestTag "89luca89/distrobox").Name | quote) -}}
+# Distrobox Version: # {{ $distroboxVersion }}
+# SHA256SUM: # {{ $distroboxVersion | sha256sum }}
+
+# {{ include (joinPath .chezmoi.sourceDir ".chezmoitemplates/scripts-library") }}
+# The following line is for ShellCheck to correctly identify the above included library
+true || source home/.chezmoitemplates/scripts-library
+
+prefix=${HOME}/.local
+
+# {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
+cmd=# {{ ( joinPath $externalScriptsDir "/install-distrobox.sh" ) | quote }}
+
+if [[ -f "${cmd}" ]]; then
+  log_task "Installing distrobox..."
+  c "${cmd}" "--prefix ${prefix}"
+  log_ok "distrobox installed"
+else
+  log_red "Installer for distrobox could not be found at: ${cmd}"
+fi

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# Repo: https://github.com/bvierra/Dotfiles/blob/master/home/dot_bashrc.tmpl
+# !! This file is managed by chezmoi !!
+# !! Any changes created may be overwritten on next run !!
+# Repo: https://github.com/bvierra/Dotfiles/
+#
 # shellcheck shell=bash
-# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
 
 # If not running interactively, don't do anything
 case $- in
@@ -108,8 +111,9 @@ fi
 
 export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}"/bash/bash-completion/bash_completion
 
-
-
+# shellcheck source=home/dot_config/bash/lib/helpers.sh
+[[ -f "${HOME}"/.config/bash/lib/helpers.sh ]] &&
+source "${HOME}"/.config/bash/lib/helpers.sh
 
 pathprepend "${HOME}/.local/bin"
 

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# !! This file is managed by chezmoi !!
+# !! Any changes created may be overwritten on next run !!
+# Repo: https://github.com/bvierra/Dotfiles/
+#
+# shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+
+# Original Source: https://github.com/felipecrs/dotfiles/blob/master/root/.chezmoiscripts/run_after_10-install-apt-packages.sh.tmpl
+
+# {{ include (joinPath .chezmoi.sourceDir ".chezmoitemplates/scripts-library") }}
+# The following line is for ShellCheck to correctly identify the above included library
+true || source home/.chezmoitemplates/scripts-library
+
+readonly wanted_packages=(
+  # standard packages
+  apt-transport-https
+  ca-certificates
+  build-essential
+  curl
+  wget
+  tree
+  git
+  # distrobox dependencies
+  podman
+  podman-compose
+  # wsl2 dependencies
+  # {{ if .isWSL }}
+  wslu
+  # {{ end }}
+)
+
+missing_packages=()
+
+for package in "${wanted_packages[@]}"; do
+  # shellcheck disable=SC2310
+  if ! is_apt_package_installed "${package}"; then
+    missing_packages+=("${package}")
+  fi
+done
+
+if [[ ${#missing_packages[@]} -gt 0 ]]; then
+  log_task "Installing missing packages with APT: ${missing_packages[*]}"
+
+  c sudo apt update
+
+  extra_args=("--install-recommends")
+
+  c env DEBIAN_FRONTEND=noninteractive sudo apt install --yes "${extra_args[@]}" "${missing_packages[@]}"
+fi
