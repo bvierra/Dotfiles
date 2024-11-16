@@ -1,4 +1,29 @@
 {
+	"chezmoi-ext-file": {
+		"prefix": "chezmoi-ext-file",
+		"description": "Chezmoi external - file",
+		"scope": "Golang Text Template",
+		"body": [
+			"[\".local/bin/${1:program_name}\"]",
+			"  type = \"file\"",
+			"  url = \"https://raw.githubusercontent.com/ajeetdsouza/zoxide/refs/heads/main/contrib/completions/zoxide.bash\"",
+			"  executable = false",
+			""
+		]
+	},
+	"chezmoi-ext-gh-archive": {
+		"prefix": "chezmoi-ext-gh-archive",
+		"description": "Chezmoi external - Github Release - archive",
+		"scope": "Golang Text Template",
+		"body": [
+			"[\".local/bin/${1:program_name}\"]",
+			"  type = \"archive-file\"",
+			"  url = {{ gitHubLatestReleaseAssetURL \"${2:Github Repo}\" (printf \"${3:archive_filename}.tar.gz\" .chezmoi.os .chezmoi.arch) | quote }}",
+			"  executable = true",
+			"  stripComponents = 1",
+			"  path = \"${1:program_name}\""
+		]
+	},
 	"chezmoi-incl-scripts-library": {
 		"prefix": "chezmoi-incl-scripts-library",
 		"description": "Includes the scripts-library both in chezmoi as well as for ShellCheck",
