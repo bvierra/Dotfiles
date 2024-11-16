@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# !! This file is managed by chezmoi !!
+# !! Any changes created may be overwritten on next run !!
+# Repo: https://github.com/bvierra/Dotfiles/
+#
+# shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+
+# {{ if eq .editor "code" -}}
+EDITOR="code --wait"
+# {{ else if ne .editor "" -}}
+EDITOR="{{ .editor | quote }}"
+# {{ else -}}
+EDITOR="vim"
+# {{ end -}}
+export EDITOR
+
+# {{ if .isWSL -}}
+WIN_HOME="/mnt/c/Users/bvierra"
+WIN_OBSIDIAN="${WIN_HOME}/Obsidian"
+export WIN_HOME WIN_OBSIDIAN
+# {{ end -}}

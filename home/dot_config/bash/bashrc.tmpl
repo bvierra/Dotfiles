@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# !! This file is managed by chezmoi !!
+# !! Any changes created may be overwritten on next run !!
+# Repo: https://github.com/bvierra/Dotfiles/
+#
+# shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+#set -o errexit   # abort on nonzero exitstatus
+#set -o nounset   # abort on unbound variable
+#set -o pipefail  # don't hide errors within pipes
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# 📢 Append commands to history file immediately (not at end of session).
+#
+export PROMPT_COMMAND='history -a'
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [[ -z "${debian_chroot:-}" ]] && [[ -r /etc/debian_chroot ]]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "${TERM}" in
+    xterm-color|*-256color) color_prompt=yes;;
+    *) color_prompt=no;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [[ -n "${force_color_prompt}" ]]; then
+    if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
+	color_prompt=yes
+    else
+	color_prompt=
+    fi
+fi
+
+if [[ "${color_prompt}" = yes ]]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "${TERM}" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+(${debian_chroot})}\u@\h: \w\a\]${PS1}"
+    ;;
+*)
+    ;;
+esac
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# shellcheck source=home/dot_config/bash/lib/helpers.sh
+[[ -f "${HOME}"/.config/bash/lib/helpers.sh ]] && source "${HOME}"/.config/bash/lib/helpers.sh
+pathprepend "${HOME}/.local/bin"
+
+# Specify basedir-spec variables to make them easier to use in bashrc scripts
+# These are set here to allow for easy use of them below
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
+XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export XDG_CACHE_HOME XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_RUNTIME_DIR
+
+# Use a slim bashrc.d with includes for individual programs
+BASHRC_DIR="${XDG_CONFIG_HOME}/bash/bashrc.d"
+if [[ -d "${BASHRC_DIR}" ]]; then
+    for file in "${BASHRC_DIR}"/*.sh; do
+        if [[ -r "${file}" ]]; then
+            # shellcheck disable=SC1090
+            . "${file}"
+        fi
+    done
+    unset file
+fi
+
+export BASH_COMPLETION_COMPAT_DIR="${XDG_DATA_HOME}/bash-completion/completions"
+
+# shellcheck source=home/dot_config/bash/bash_aliases
+[[ -f "${XDG_CONFIG_HOME}"/bash/bash_aliases ]] && source "${XDG_CONFIG_HOME}"/bash/bash_aliases
+
+# vim: set ft=bash

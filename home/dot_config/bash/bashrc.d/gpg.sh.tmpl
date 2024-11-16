@@ -4,6 +4,10 @@
 # Repo: https://github.com/bvierra/Dotfiles/
 #
 # shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
 
-# shellcheck disable=SC1091
-[[ -f "${HOME}/.config/bash/bashrc" ]] && . "${HOME}/.config/bash/bashrc"
+# {{ if .key_sign -}}
+GPGKEY=# {{ .key_sign | quote }}
+GPG_TTY=$(tty)
+export GPGKEY GPG_TTY
+# {{- end }}
