@@ -2,7 +2,7 @@
 	"chezmoi-ext-file": {
 		"prefix": "chezmoi-ext-file",
 		"description": "Chezmoi external - file",
-		"scope": "",
+		"scope": "Golang Text Template",
 		"body": [
 			"[\".local/bin/${1:program_name}\"]",
 			"  type = \"file\"",
@@ -76,8 +76,7 @@
 		"#",
 		"# shellcheck shell=bash"
 	],
-	"description": "Bash script header",
-	"scope": "shellscript"
+    "description": "Bash script header"
   },
   "header-bash-template": {
     "prefix": "header-bash-template",
@@ -90,7 +89,6 @@
 		"# shellcheck shell=bash",
 		"# chezmoi:template:left-delimiter=\"# {{\" right-delimiter=}}"
 	],
-	"description": "Templated bash script header",
-	"scope": "shellscript"
+    "description": "Templated bash script header"
   }
 }
