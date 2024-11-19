@@ -1,11 +1,11 @@
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
-{{- if ne .key_sign "" }}
+{{- if .key_sign }}
 	signingkey = {{ .key_sign }}
 {{- end }}
 
-{{ if ne .key_sign "" }}
+{{ if .key_sign }}
 [commit]
 	gpgsign = true
 {{ end }}
