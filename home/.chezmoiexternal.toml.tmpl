@@ -53,6 +53,18 @@
   url = "https://raw.githubusercontent.com/ajeetdsouza/zoxide/refs/heads/main/contrib/completions/zoxide.bash"
   executable = false
 
+[".local/bin/bw"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "bitwarden/clients" (printf "bw-%s-*.zip" .chezmoi.os) | quote }}
+  executable = true
+  path = "bw"
+
+[".local/bin/dasel"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "TomWright/dasel" (printf "dasel_linux_%s" .chezmoi.arch) | quote }}
+  executable = true
+
+
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
   type = "file"
