@@ -46,7 +46,7 @@
 
 
 {{- if eq $username "bvierra" -}}
-{{-   if eq $hostname "BlackBox-wsl" -}}
+{{-   if (or (eq $hostname "BlackBox-wsl") (eq $hostname "graybox") (eq $hostname "blackbox")) -}}
 {{-     $personal = true -}}
 {{-   end -}}
 {{- end -}}

@@ -1,17 +1,24 @@
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
-{{- if .key_sign }}
+{{- if ne .key_sign "" }}
 	signingkey = {{ .key_sign }}
 {{- end }}
 
-{{ if .key_sign }}
+{{ if ne .key_sign "" }}
 [commit]
 	gpgsign = true
 {{ end }}
 
+{{ if ne .editor "" -}}
 [core]
+{{   if eq .editor "code" -}}
 	editor = {{ (printf "%s --wait" .editor) | quote }}
+{{   else if eq .editor "vim" -}}
+  editor = vim
+{{   end }}
+{{ end }}
+
 
 [fetch]
 	prune = true
