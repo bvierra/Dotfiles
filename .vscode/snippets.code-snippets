@@ -2,7 +2,7 @@
 	"chezmoi-ext-file": {
 		"prefix": "chezmoi-ext-file",
 		"description": "Chezmoi external - file",
-		"scope": "Golang Text Template",
+		"scope": "",
 		"body": [
 			"[\".local/bin/${1:program_name}\"]",
 			"  type = \"file\"",
@@ -14,7 +14,7 @@
 	"chezmoi-ext-gh-archive": {
 		"prefix": "chezmoi-ext-gh-archive",
 		"description": "Chezmoi external - Github Release - archive",
-		"scope": "Golang Text Template",
+		"scope": "",
 		"body": [
 			"[\".local/bin/${1:program_name}\"]",
 			"  type = \"archive-file\"",
@@ -76,7 +76,8 @@
 		"#",
 		"# shellcheck shell=bash"
 	],
-    "description": "Bash script header"
+	"description": "Bash script header",
+	"scope": "shellscript"
   },
   "header-bash-template": {
     "prefix": "header-bash-template",
@@ -89,6 +90,7 @@
 		"# shellcheck shell=bash",
 		"# chezmoi:template:left-delimiter=\"# {{\" right-delimiter=}}"
 	],
-    "description": "Templated bash script header"
+	"description": "Templated bash script header",
+	"scope": "shellscript"
   }
 }
