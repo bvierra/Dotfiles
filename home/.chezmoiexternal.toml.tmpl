@@ -64,6 +64,11 @@
   url = {{ gitHubLatestReleaseAssetURL "TomWright/dasel" (printf "dasel_linux_%s" .chezmoi.arch) | quote }}
   executable = true
 
+[".local/bin/direnv"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "direnv/direnv" (printf "direnv.linux-%s" .chezmoi.arch) | quote }}
+  executable = true
+
 
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
