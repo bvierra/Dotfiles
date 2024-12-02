@@ -69,6 +69,10 @@
   url = {{ gitHubLatestReleaseAssetURL "direnv/direnv" (printf "direnv.linux-%s" .chezmoi.arch) | quote }}
   executable = true
 
+[".local/bin/mise"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-%s-x64" .chezmoi.os) | quote }}
+  executable = true
 
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
