@@ -53,11 +53,11 @@
   url = "https://raw.githubusercontent.com/ajeetdsouza/zoxide/refs/heads/main/contrib/completions/zoxide.bash"
   executable = false
 
-[".local/bin/bw"]
+{{/* [".local/bin/bw"]
   type = "archive-file"
   url = {{ gitHubLatestReleaseAssetURL "bitwarden/clients" (printf "bw-%s-*.zip" .chezmoi.os) | quote }}
   executable = true
-  path = "bw"
+  path = "bw" */}}
 
 [".local/bin/dasel"]
   type = "file"
@@ -70,9 +70,10 @@
   executable = true
 
 [".local/bin/mise"]
-  type = "file"
-  url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-%s-x64" .chezmoi.os) | quote }}
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-linux-x64.tar.xz") | quote }}
   executable = true
+  path = "mise/bin/mise"
 
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
