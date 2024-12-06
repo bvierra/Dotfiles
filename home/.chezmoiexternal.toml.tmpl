@@ -75,6 +75,20 @@
   executable = true
   path = "mise/bin/mise"
 
+[".local/bin/lsd"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "lsd-rs/lsd" (printf "lsd-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
+  executable = true
+  stripComponents = 1
+  path = "lsd"
+
+[".local/share/bash-completion/completions/lsd"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "lsd-rs/lsd" (printf "lsd-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
+  executable = false
+  stripComponents = 1
+  path = "autocomplete/lsd.bash-completion"
+
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
   type = "file"
