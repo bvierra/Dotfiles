@@ -1,6 +1,6 @@
-# shellcheck disable=all
 {{ if eq .chezmoi.os "linux" -}}
 #!/usr/bin/env bash
+# shellcheck disabled=all
 
 url={{ gitHubLatestReleaseAssetURL "sharkdp/bat" (printf "bat-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
 strip-components=1
