@@ -1,14 +1,32 @@
 {{ $packerVersion := "1.11.2" -}}
 {{ $kubectlVersion := "1.31.2" -}}
 
-[".local/bin/packer"]
+[".local/bin/act"]
   type = "archive-file"
-  url = "https://releases.hashicorp.com/packer/{{ $packerVersion }}/packer_{{ $packerVersion }}_{{ .chezmoi.os }}_{{ .chezmoi.arch }}.zip"
-  path = "packer"
+  url = {{ gitHubLatestReleaseAssetURL "nektos/act" (printf "act_Linux_x86_64.tar.gz") | quote }}
+  executable = true
+  path = "act"
 
-[".local/bin/kubectl"]
+[".local/bin/dasel"]
   type = "file"
-  url = "https://dl.k8s.io/release/v{{ $kubectlVersion }}/bin/linux/amd64/kubectl"
+  url = {{ gitHubLatestReleaseAssetURL "TomWright/dasel" (printf "dasel_linux_%s" .chezmoi.arch) | quote }}
+  executable = true
+
+[".local/bin/delta"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "dandavison/delta" (printf "delta-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
+  executable = true
+  stripComponents = 1
+  path = "delta"
+
+[".local/bin/direnv"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "direnv/direnv" (printf "direnv.linux-%s" .chezmoi.arch) | quote }}
+  executable = true
+
+[".local/bin/fabric"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "danielmiessler/fabric" (printf "fabric-%s-%s" .chezmoi.os .chezmoi.arch) | quote }}
   executable = true
 
 [".local/bin/fzf"]
@@ -24,56 +42,10 @@
   stripComponents = 1
   path = "glow"
 
-[".local/bin/act"]
-  type = "archive-file"
-  url = {{ gitHubLatestReleaseAssetURL "nektos/act" (printf "act_Linux_x86_64.tar.gz") | quote }}
-  executable = true
-  path = "act"
-
-[".local/bin/fabric"]
+[".local/bin/kubectl"]
   type = "file"
-  url = {{ gitHubLatestReleaseAssetURL "danielmiessler/fabric" (printf "fabric-%s-%s" .chezmoi.os .chezmoi.arch) | quote }}
+  url = "https://dl.k8s.io/release/v{{ $kubectlVersion }}/bin/linux/amd64/kubectl"
   executable = true
-
-[".local/bin/delta"]
-  type = "archive-file"
-  url = {{ gitHubLatestReleaseAssetURL "dandavison/delta" (printf "delta-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
-  executable = true
-  stripComponents = 1
-  path = "delta"
-
-[".local/bin/zoxide"]
-  type = "archive-file"
-  url = {{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (printf "zoxide-*-x86_64-unknown-%s-musl.tar.gz" .chezmoi.os) | quote }}
-  executable = true
-  path = "zoxide"
-
-[".local/share/bash-completion/completions/zoxide"]
-  type = "file"
-  url = "https://raw.githubusercontent.com/ajeetdsouza/zoxide/refs/heads/main/contrib/completions/zoxide.bash"
-  executable = false
-
-{{/* [".local/bin/bw"]
-  type = "archive-file"
-  url = {{ gitHubLatestReleaseAssetURL "bitwarden/clients" (printf "bw-%s-*.zip" .chezmoi.os) | quote }}
-  executable = true
-  path = "bw" */}}
-
-[".local/bin/dasel"]
-  type = "file"
-  url = {{ gitHubLatestReleaseAssetURL "TomWright/dasel" (printf "dasel_linux_%s" .chezmoi.arch) | quote }}
-  executable = true
-
-[".local/bin/direnv"]
-  type = "file"
-  url = {{ gitHubLatestReleaseAssetURL "direnv/direnv" (printf "direnv.linux-%s" .chezmoi.arch) | quote }}
-  executable = true
-
-[".local/bin/mise"]
-  type = "archive-file"
-  url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-linux-x64.tar.xz") | quote }}
-  executable = true
-  path = "mise/bin/mise"
 
 [".local/bin/lsd"]
   type = "archive-file"
@@ -88,6 +60,28 @@
   executable = false
   stripComponents = 1
   path = "autocomplete/lsd.bash-completion"
+
+[".local/bin/mise"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-linux-x64.tar.xz") | quote }}
+  executable = true
+  path = "mise/bin/mise"
+
+[".local/bin/packer"]
+  type = "archive-file"
+  url = "https://releases.hashicorp.com/packer/{{ $packerVersion }}/packer_{{ $packerVersion }}_{{ .chezmoi.os }}_{{ .chezmoi.arch }}.zip"
+  path = "packer"
+
+[".local/bin/zoxide"]
+  type = "archive-file"
+  url = {{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (printf "zoxide-*-x86_64-unknown-%s-musl.tar.gz" .chezmoi.os) | quote }}
+  executable = true
+  path = "zoxide"
+
+[".local/share/bash-completion/completions/zoxide"]
+  type = "file"
+  url = "https://raw.githubusercontent.com/ajeetdsouza/zoxide/refs/heads/main/contrib/completions/zoxide.bash"
+  executable = false
 
 {{ $externalScriptsDir := includeTemplate "get-external-scripts-dir" . }}
 ["{{ $externalScriptsDir }}/install-distrobox.sh"]
