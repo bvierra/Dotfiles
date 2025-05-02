@@ -7,6 +7,11 @@
   executable = true
   path = "act"
 
+[".local/bin/atmos"]
+  type = "file"
+  url = {{ gitHubLatestReleaseAssetURL "cloudposse/atmos" (printf "atmos_*_%s_%s" .chezmoi.os .chezmoi.arch) | quote }}
+  executable = true
+
 [".local/bin/dasel"]
   type = "file"
   url = {{ gitHubLatestReleaseAssetURL "TomWright/dasel" (printf "dasel_linux_%s" .chezmoi.arch) | quote }}
