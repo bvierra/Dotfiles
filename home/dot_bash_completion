@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+shopt -s nullglob
+
+if [ -d ~/.local/share/bash-completion/completions/ ]; then
+  for f in ~/.local/share/bash-completion/completions/*; do
+    # shellcheck disable=SC1090
+    . "$f"
+  done
+fi

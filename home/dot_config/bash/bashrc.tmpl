@@ -115,6 +115,7 @@ elif [[ -f /etc/bash_completion ]]; then
     # shellcheck disable=SC1090
     . /etc/bash_completion
 fi
+source /etc/bash_completion.d/000_bash_completion_compat.bash
 
 BASHRC_DIR="${XDG_CONFIG_HOME}/bash/bashrc.d"
 if [[ -d "${BASHRC_DIR}" ]]; then
