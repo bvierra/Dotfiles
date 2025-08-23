@@ -1,8 +1,10 @@
+#shellcheck shell=sh
 # if running bash
-if [ -n "$BASH_VERSION" ]; then
+if [ -n "${BASH_VERSION}" ]; then
     # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-    . "$HOME/.bashrc"
+    if [ -f "${HOME}/.bashrc" ]; then
+      # shellcheck disable=SC1091
+      . "${HOME}/.bashrc"
     fi
 fi
 export BASHRC_READ_bash_profile="1"
