@@ -10,6 +10,9 @@ stripcomponents=1
 tmp_dir=$( mktemp -d -t bat-XXXXXX )
 trap 'rm -rf "$tmp_dir"' EXIT
 
+[[ -d "${HOME}/.local/bin/" ]] || mkdir -p "${HOME}/.local/bin"
+[[ -d "${HOME}/.local/share/bash-completion/completions" ]] || mkdir -p "${HOME}/.local/share/bash-completion/completions"
+
 curl -L "${url}" | tar -xz --strip-components="${stripcomponents}" -C "${tmp_dir}"
 cp "${tmp_dir}/bat" "${HOME}/.local/bin/bat"
 chmod 0755 "${HOME}/.local/bin/bat"
