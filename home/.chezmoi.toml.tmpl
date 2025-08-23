@@ -2,6 +2,9 @@ encryption = "age"
 [age]
   identity = "{{ .chezmoi.homeDir -}}/.key.txt"
   recipient = "age17lav4s6j0lchx0t05mr85l3htuqk7eeuth5ksvwzv0c8dw63zc4stw50nf"
+
+{{- $personal:= env "bvierra" | not | not -}}
+
 {{/* boolean feature tags */}}
 {{- $ephemeral := false -}}{{/* true if this machine is ephemeral */}}
 {{- $personal := false -}}
@@ -41,17 +44,6 @@ encryption = "age"
 {{- if eq .chezmoi.os "linux" -}}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
 {{-     $isWSL = true -}}
-{{-   end -}}
-{{- end -}}
-
-
-{{- /* If hostname is equal to blackbox then this is a personal computer */ -}}
-
-
-
-{{- if eq $username "bvierra" -}}
-{{-   if (or (eq $hostname "BlackBox-wsl") (eq $hostname "graybox") (eq $hostname "blackbox") (eq $hostname "BlackBox")) -}}
-{{-     $personal = true -}}
 {{-   end -}}
 {{- end -}}
 
