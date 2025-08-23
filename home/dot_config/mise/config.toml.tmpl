@@ -15,7 +15,7 @@ usage = "latest"
 uv = "latest"
 
 [env]
-_.file = "${HOME}/.config/mise/.env.json"
-SOPS_AGE_KEY_FILE = "${HOME}/.config/chezmoi/age.txt"
+_.file = "{{ .chezmoi.homeDir -}}/.config/mise/.env.json"
+SOPS_AGE_KEY_FILE = "{{ .chezmoi.homeDir -}}/.config/mise/age-key.txt"
 SOPS_AGE_RECIPIENTS = "age17lav4s6j0lchx0t05mr85l3htuqk7eeuth5ksvwzv0c8dw63zc4stw50nf"
 PVECONTROL_CLUSTER = "s"
