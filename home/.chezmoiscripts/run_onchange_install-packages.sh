@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-sudo apt install jq
+# vim: set ft=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+# {{ if eq .chezmoi.os "linux" -}}
+sudo DEBIAN_FRONTEND=noninteractive apt -y install jq
 
-# Install kubectl krew
 # TODO: This is the default installation method. Change it to use templates
 if [[ ! -d ~/.local/share/krew ]]; then
   (
