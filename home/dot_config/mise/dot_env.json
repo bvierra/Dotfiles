@@ -1,0 +1,15 @@
+{
+	"GITHUB_ACCESS_TOKEN": "ENC[AES256_GCM,data:Q2tR9wG9yH0skUVLTl/p62qVpA+w70CsNlr13Tyc6f5oaheSE31MEg==,iv:TSoFl7rLhDKYY7nifASXSKnzWscR36I27KcMV+0HN/Y=,tag:gUR9kRbnwEdsDH4rw9iuQg==,type:str]",
+	"sops": {
+		"age": [
+			{
+				"recipient": "age17lav4s6j0lchx0t05mr85l3htuqk7eeuth5ksvwzv0c8dw63zc4stw50nf",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPVmdSUzNhOE9XZFZkR3ha\nbzc0R3M5aUE0N2V5WW1mQXBoVktkRWxJaldVClJmc2tNRDhzam5HVFgyRU04KzNO\nNTF1dzZwZjZ6M1RvYzYyRi9iNmdZR0kKLS0tIEJ4bGx6UzFmQkhiRlRleUx5VFBO\nZkhUNCs0RzBvNnRsVkVjVjVEdW1iazgKAwYq/GCGM1NqOcQoEE1vOsOAK3aRDWrh\noT/Vf8rduRqQ7tsvfXLqdUfFzaVoIkuPKisPXLcdrpzgUryU8kSe+w==\n-----END AGE ENCRYPTED FILE-----\n"
+			}
+		],
+		"lastmodified": "2025-08-21T06:24:22Z",
+		"mac": "ENC[AES256_GCM,data:4f3mS/ueB2JjFx+q9DdNQ07b25v//SdQnMG3ByQPJlAcyGOplJDszIr3OrmhlUDFIuNIthkZDXsZKXtJ4Tjc1P8ahef9+XUPNQUb/u1MGRxHK/3OR3R9Ik0nA6V3KQ32mNUmUUK7Huqj2rnKGkZxvsl+750l4o1QgdpujBVU1lY=,iv:W4tYQdQeNg2g19vow+m+sIbx27BMPI7CTg+Iy6moGD0=,tag:OYRimYdOPX9x37+bcG91uQ==,type:str]",
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.10.2"
+	}
+}
