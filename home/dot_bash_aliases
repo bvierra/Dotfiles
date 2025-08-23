@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC1091
-[[ -f "${HOME}/.config/bash/.bash_aliases" ]] && . "${HOME}/.config/bash/.bash_aliases"

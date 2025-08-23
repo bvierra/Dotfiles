@@ -1,0 +1,13 @@
+#shellcheck shell=bash
+
+#shellcheck disable=SC2154
+BASHALIAS_DIR="${XDG_CONFIG_HOME}/bash/bash_aliases.d"
+if [[ -d "${BASHALIAS_DIR}" ]]; then
+    for file in "${BASHALIAS_DIR}"/*.sh; do
+        if [[ -r "${file}" ]]; then
+            # shellcheck disable=SC1090
+            . "${file}"
+        fi
+    done
+    unset file
+fi

@@ -9,5 +9,6 @@ if ! shopt -oq posix; then
   elif [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
   fi
+  source /etc/bash_completion.d/000_bash_completion_compat.bash
 fi
 # vim: set filetype=bash:
