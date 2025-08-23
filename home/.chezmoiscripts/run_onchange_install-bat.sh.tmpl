@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
-# shellcheck disabled=all
-{{ if eq .chezmoi.os "linux" -}}
+# vim: set ft=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+# {{ if eq .chezmoi.os "linux" -}}
 
 set -e
 
-url={{ gitHubLatestReleaseAssetURL "sharkdp/bat" (printf "bat-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
+url=# {{ gitHubLatestReleaseAssetURL "sharkdp/bat" (printf "bat-*-%s-unknown-%s-gnu.tar.gz" .archDL .chezmoi.os) | quote }}
 stripcomponents=1
 tmp_dir=$( mktemp -d -t bat-XXXXXX )
 trap 'rm -rf "$tmp_dir"' EXIT
 
 curl -L "${url}" | tar -xz --strip-components="${stripcomponents}" -C "${tmp_dir}"
-cp "$tmp_dir/bat" "${HOME}/.local/bin/bat"
+cp "${tmp_dir}/bat" "${HOME}/.local/bin/bat"
 chmod 0755 "${HOME}/.local/bin/bat"
-cp "$tmp_dir/autocomplete/bat.bash" "${HOME}/.local/share/bash-completion/completions/bat"
+cp "${tmp_dir}/autocomplete/bat.bash" "${HOME}/.local/share/bash-completion/completions/bat"
 echo "complete -F _bat cat" >> "${HOME}/.local/share/bash-completion/completions/bat"
 
 
 
-rm -rf "$tmp_dir"
+rm -rf "${tmp_dir}"
 
-{{ end -}}
-# vim: set filetype=bash:
+# {{ end -}}
+
