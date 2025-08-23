@@ -1,3 +1,7 @@
+encryption = "age"
+[age]
+  identity = "{{ .chezmoi.homeDir -}}/.key.txt"
+  recipient = "age17lav4s6j0lchx0t05mr85l3htuqk7eeuth5ksvwzv0c8dw63zc4stw50nf"
 {{/* boolean feature tags */}}
 {{- $ephemeral := false -}}{{/* true if this machine is ephemeral */}}
 {{- $personal := false -}}
