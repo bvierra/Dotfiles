@@ -30,7 +30,39 @@
   editor = code --wait
   excludesfile = ~/.gitignore_global
 
+[difftool "vscode"]
+cmd = code --wait --diff $LOCAL $REMOTE
+
+[mergetool "vscode"]
+cmd = code --wait $MERGED
+
+[diff]
+tool = vscode
+
+[merge]
+autoStash = true
+tool = vscode
+
+[rebase]
+autoStash = true
+
+[push]
+autoSetupRemote = true
+
+[init]
+defaultBranch = master
+
+[gitreview]
+remote = origin
+
 {{- if eq .chezmoi.username "bvierra" }}
 [url "git@github.com:bvierra"]
   insteadOf = https://github.com/bvierra
 {{ end }}
+
+[alias]
+apply-gitignore = "!f() { \
+  set -ex; \
+  git rm -r --cached . >/dev/null; \
+  git add .; \
+};f"
