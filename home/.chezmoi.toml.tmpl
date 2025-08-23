@@ -47,7 +47,7 @@ encryption = "age"
 {{- end -}}
 
 {{- /* Set standard values for required config options if personal */ -}}
-{{- if eq $personal true -}}
+{{- if $personal -}}
 {{-   $name = "Billy Vierra" -}}
 {{-   $email = "bvierra@gmail.com" -}}
 {{-   $key_sign = "C76E7D8E3369C6A4" -}}
