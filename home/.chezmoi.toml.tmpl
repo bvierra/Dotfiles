@@ -78,6 +78,30 @@ encryption = "age"
 {{-   end -}}
 {{- end -}}
 
+{{- $lat := "0" -}}
+{{- $lon := "0" -}}
+{{- if env "bvierra_lat" -}}
+{{-   $lat = env "bvierra_lat" -}}
+{{- end -}}
+{{- if env "bvierra_lon" -}}
+{{-   $lon = env "bvierra_lon" -}}
+{{- end -}}
+
+{{- if (stdinIsATTY) -}}
+{{-   if (and (eq $lat "0") (eq $lon "0")) -}}
+{{-     writeToStdout "🌍 You can set your location (latitude and longitude) to show the weather in your tmux status line.\n" -}}
+{{-     writeToStdout "🌍 You can find your latitude and longitude at https://www.latlong.net/.\n" -}}
+{{-     writeToStdout "🌍 If you do not set a location, it will disable weather in your tmux status line.\n" -}}
+{{-     if (eq $lat "0") -}}
+{{-       $lat = promptString "latitude" "0" -}}
+{{-     end -}}
+{{-     if (eq $lon "0") -}}
+{{-       $lon = promptString "longitude" "0" -}}
+{{-     end -}}
+{{-     writeToStdout (printf "🌍 Your location is set to lat=%s lon=%s\n" $lat $lon) -}}
+{{-   end -}}
+{{- end -}}
+
 sourceDir = {{ .chezmoi.sourceDir | quote }}
 
 [data]
@@ -91,6 +115,8 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   editor = {{ $editor | quote }}
   diff = {{ $diff | quote }}
   merge = {{ $merge | quote }}
+  lat = {{ $lat | quote }}
+  lon = {{ $lon | quote }}
 
 {{ if eq $editor "code" -}}
 [edit]
