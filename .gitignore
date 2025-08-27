@@ -2,3 +2,4 @@ external-scripts/*
 a/
 
 key.txt
+.vscode/settings.json
