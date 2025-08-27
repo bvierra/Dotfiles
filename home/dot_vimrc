@@ -1,0 +1,11 @@
+set nocompatible
+
+syntax enable
+" use visual bell instead of beeping
+set vb
+
+" incremental search
+set incsearch
+
+set tabstop=2|set shiftwidth=2|set expandtab|set softtabstop=2
+set autoindent|set smartindent
