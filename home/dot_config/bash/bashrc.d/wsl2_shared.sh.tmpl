@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# vim: set ft=bash
+# chezmoi:template:left-delimiter="# {{" right-delimiter=}}
+# This will only run if init found we are in WSL
+# Checks if /mnt/wsl/shared exists, if so this is a 'secondary' wsl2 distro
+# {{ if .isWSL }}
+IS_MAIN_WSL=false
+if [[ -d "${HOME}/.shared" ]]; then
+  IS_MAIN_WSL=true
+fi
+
+if [[ "${IS_MAIN_WSL}" == true ]]; then
+  if [[ ! -d "/mnt/wsl/shared" ]]; then
+    mkdir "/mnt/wsl/shared"
+    if [[ ! -d "${HOME}/.shared" ]]; then
+      mkdir "${HOME}/.shared"
+    fi
+    sudo mount --bind "${HOME}/.shared" /mnt/wsl/shared
+  fi
+  echo "[WSL2] Mounted ${HOME}/.shared to /mnt/wsl/shared"
+else
+  if [[ -d "/mnt/wsl/shared" ]]; then
+    echo "[WSL2] /mnt/wsl/shared is available for sharing files between WSL2 distros"
+  else
+    echo "[WSL2] /mnt/wsl/shared is NOT shared. Please start up primary WSL2 distro to enable sharing"
+  fi
+fi
+# {{ end }}
