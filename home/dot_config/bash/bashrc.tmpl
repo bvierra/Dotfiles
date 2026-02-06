@@ -136,5 +136,9 @@ fi
 # shellcheck source=home/dot_config/bash/bash_aliases
 [[ -f "${XDG_CONFIG_HOME}"/bash/bash_aliases ]] && source "${XDG_CONFIG_HOME}"/bash/bash_aliases
 [[ -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source -- "${XDG_DATA_HOME}/blesh/ble.sh"
+if command -v atuin &>/dev/null; then
+  eval "$(atuin init bash)"
+fi
+
 
 # vim: set ft=bash
