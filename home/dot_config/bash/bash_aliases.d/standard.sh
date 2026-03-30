@@ -27,3 +27,7 @@ refreshenv() {
   shell=$(ps -p $$ -ocomm=) &&
     exec "${shell}"
 }
+
+pppath() {
+  echo -e "${PATH//:/\\n}"
+}

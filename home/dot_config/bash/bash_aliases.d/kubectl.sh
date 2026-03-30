@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 alias kns="kubectl-ns"
-alias kctx="kubectl-ctx"
+alias kctx="kubectx"
 
 # Merge all ~/.kube/*.kubeconfig.yaml into ~/.kube/config
 merge-kubeconfigs() {

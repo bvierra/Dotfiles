@@ -1,5 +1,6 @@
 {
 	"GITHUB_ACCESS_TOKEN": "ENC[AES256_GCM,data:Q2tR9wG9yH0skUVLTl/p62qVpA+w70CsNlr13Tyc6f5oaheSE31MEg==,iv:TSoFl7rLhDKYY7nifASXSKnzWscR36I27KcMV+0HN/Y=,tag:gUR9kRbnwEdsDH4rw9iuQg==,type:str]",
+	"GITHUB_TOKEN": "ENC[AES256_GCM,data:yLLLFxfoa6nqk4MVhYDkGVMes8OSMWqtx1aD1r87hG3EZWKeH7yjZQ==,iv:iJsCBIoEWjl66msBABI6dMCNtuJSTuodJebFhAEXulA=,tag:lDQrOkzoYlJvEJYpmfN7Yw==,type:str]",
 	"sops": {
 		"age": [
 			{
@@ -7,9 +8,9 @@
 				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPVmdSUzNhOE9XZFZkR3ha\nbzc0R3M5aUE0N2V5WW1mQXBoVktkRWxJaldVClJmc2tNRDhzam5HVFgyRU04KzNO\nNTF1dzZwZjZ6M1RvYzYyRi9iNmdZR0kKLS0tIEJ4bGx6UzFmQkhiRlRleUx5VFBO\nZkhUNCs0RzBvNnRsVkVjVjVEdW1iazgKAwYq/GCGM1NqOcQoEE1vOsOAK3aRDWrh\noT/Vf8rduRqQ7tsvfXLqdUfFzaVoIkuPKisPXLcdrpzgUryU8kSe+w==\n-----END AGE ENCRYPTED FILE-----\n"
 			}
 		],
-		"lastmodified": "2025-08-21T06:24:22Z",
-		"mac": "ENC[AES256_GCM,data:4f3mS/ueB2JjFx+q9DdNQ07b25v//SdQnMG3ByQPJlAcyGOplJDszIr3OrmhlUDFIuNIthkZDXsZKXtJ4Tjc1P8ahef9+XUPNQUb/u1MGRxHK/3OR3R9Ik0nA6V3KQ32mNUmUUK7Huqj2rnKGkZxvsl+750l4o1QgdpujBVU1lY=,iv:W4tYQdQeNg2g19vow+m+sIbx27BMPI7CTg+Iy6moGD0=,tag:OYRimYdOPX9x37+bcG91uQ==,type:str]",
+		"lastmodified": "2025-10-08T15:18:02Z",
+		"mac": "ENC[AES256_GCM,data:4dbs3RGvPfsjxdRE+YFkMuKKS/23f98Y3RFDtqTV/UgV5E2c9j30f+Yz0nZYY8DunyRw0zrfzoHqGm+l5URufzqHX+7ERokRIGgHzu1W4PXciQpLl32QqGumLWmsDNd09FrF8P6fYeFyK97usAo41wpChpLLLlQdcBgqm4uuacA=,iv:QAKwQblzD/6IxBtHaepbliNgZ3cjs+qURLsuRHhpLtQ=,tag:XKk08E+EozICX2pYw6Ei1g==,type:str]",
 		"unencrypted_suffix": "_unencrypted",
-		"version": "3.10.2"
+		"version": "3.11.0"
 	}
 }

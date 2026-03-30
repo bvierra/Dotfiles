@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+
+if [[ "$#" -ne 1 ]]; then
+  echo "Expects single arg which is the dir to remove from PATH"
+fi
+
+declare exportpath
+
+set -f; IFS=:
+for path in $PATH; do
+#    echo "path: $path"
+#    echo "dir: $dir"
+  if [ "${dir}" != "${path}" ]; then
+    exportpath+="${path}:"
+  fi
+done
+set =f; unset IFS
+
+a="${exportpath%?}"
+export PATH="$a"
