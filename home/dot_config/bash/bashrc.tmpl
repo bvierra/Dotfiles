@@ -15,6 +15,9 @@ case $- in
       *) return;;
 esac
 
+# Initialize mise shims
+eval "$(mise activate bash)"
+
 #set -o errexit   # abort on nonzero exitstatus
 #set -o nounset   # abort on unbound variable
 #set -o pipefail  # don't hide errors within pipes
@@ -132,10 +135,9 @@ if [[ -d "${BASHRC_DIR}" ]]; then
 fi
 
 
-
+eval "$(starship init bash)"
 # shellcheck source=home/dot_config/bash/bash_aliases
 [[ -f "${XDG_CONFIG_HOME}"/bash/bash_aliases ]] && source "${XDG_CONFIG_HOME}"/bash/bash_aliases
-[[ -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source -- "${XDG_DATA_HOME}/blesh/ble.sh"
 if command -v atuin &>/dev/null; then
   eval "$(atuin init bash)"
 fi

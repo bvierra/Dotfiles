@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # shellcheck shell=bash
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -9,7 +10,7 @@ if ! shopt -oq posix; then
   elif [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
   fi
-  if [[ -f /etc/bash_completion.d/000_bash_completion_compat.bash ]]; then
+  if [[ -f /etc/bash_completion.d/000_bash_completion_compat.bash ]]; then    
     source /etc/bash_completion.d/000_bash_completion_compat.bash
   fi
 fi

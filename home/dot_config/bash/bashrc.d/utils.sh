@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Copy stdin to the clipboard
 copy() {
 	pbcopy 2>/dev/null ||

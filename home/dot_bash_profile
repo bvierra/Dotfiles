@@ -1,10 +1,15 @@
 #shellcheck shell=sh
-# if running bash
-if [ -n "${BASH_VERSION}" ]; then
+# if interactive session
+if [ -t 0 ]; then
+  # if running bash
+  if [ -n "${BASH_VERSION}" ]; then
     # include .bashrc if it exists
     if [ -f "${HOME}/.bashrc" ]; then
       # shellcheck disable=SC1091
       . "${HOME}/.bashrc"
     fi
+  fi
+else
+  # if not an interactive session load mise shims
+  eval "$(mise activate bash --shims)"
 fi
-export BASHRC_READ_bash_profile="1"

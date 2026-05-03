@@ -1,0 +1,5 @@
+[user]
+  email = {{ .email }}
+{{- if .key_sign }}
+  signingkey = {{ .key_sign }}
+{{- end }}

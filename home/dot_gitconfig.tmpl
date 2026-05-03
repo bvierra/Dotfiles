@@ -1,47 +1,43 @@
 [user]
-	email = {{ .email }}
 	name = {{ .name }}
-{{- if .key_sign }}
-	signingkey = {{ .key_sign }}
-{{- end }}
+  useConfigOnly = true
+
+[includeIf "gitdir:~/p/w/"]
+  path = ~/.config/git/work/.gitconfig
+
+[includeIf "gitdir:~/p/p/"]
+  path = ~/.config/git/personal/.gitconfig
 
 {{ if .key_sign }}
 [commit]
 	gpgsign = true
 {{ end }}
 
-{{ if ne .editor "" -}}
 [core]
+{{ if ne .editor "" -}}
 {{   if eq .editor "code" -}}
 	editor = {{ (printf "%s --wait" .editor) | quote }}
 {{   else if eq .editor "vim" -}}
   editor = vim
 {{   end }}
 {{ end }}
-
+  excludesfile = ~/.gitignore_global
 
 [fetch]
 	prune = true
 
-[init]
-  defaultBranch = main
-
-[core]
-  editor = code --wait
-  excludesfile = ~/.gitignore_global
+[diff]
+tool = vscode
 
 [difftool "vscode"]
 cmd = code --wait --diff $LOCAL $REMOTE
 
-[mergetool "vscode"]
-cmd = code --wait $MERGED
-
-[diff]
-tool = vscode
-
 [merge]
 autoStash = true
 tool = vscode
+
+[mergetool "vscode"]
+cmd = code --wait $MERGED
 
 [rebase]
 autoStash = true
@@ -58,11 +54,54 @@ remote = origin
 {{- if eq .chezmoi.username "bvierra" }}
 [url "git@github.com:bvierra"]
   insteadOf = https://github.com/bvierra
+
+[credential "https://github.com"]
+  helper =
+  helper = !/home/bvierra/.local/share/mise/shims/gh auth git-credential
+[credential "https://gist.github.com"]
+  helper =
+  helper = !/home/bvierra/.local/share/mise/shims/gh auth git-credential
 {{ end }}
 
+
+
 [alias]
-apply-gitignore = "!f() { \
-  set -ex; \
-  git rm -r --cached . >/dev/null; \
-  git add .; \
-};f"
+  a = add
+  # list branches sorted by last modified
+  b = "!git for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'"
+  c = commit -m
+  com = "!f() { git switch main && git pull; }; f"
+  s = status -s
+  sm = "!f() { git switch main && git pull; }; f"
+  apply-gitignore = "!f() { \
+    set -ex; \
+    git rm -r --cached . >/dev/null; \
+    git add .; \
+  };f"
+
+
+  #### From https://github.com/GitAlias/gitalias
+  ## Branch
+  branch-commit-first = "!f() { \
+    branch="${1:-$(git current-branch)}"; \
+    count="${2:-1}"; \
+    git log --reverse --pretty=%H "$branch" | \
+    head -"$count"; \
+  }; f"
+
+  ranch-commit-last = "!f() { \
+    branch="${1:-$(git current-branch)}"; \
+    count="${2:-1}"; \
+    git log --pretty=%H "$branch" | \
+    head -"$count"; \
+  }; f"
+
+  branches = branch -a
+
+  stashes = stash list
+
+  tags = tag -n1 --list
+
+
+  # list aliases
+  la = "!git config -l | grep alias | cut -c 7-"

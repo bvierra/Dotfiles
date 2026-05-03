@@ -1,5 +1,4 @@
-
-
+#!/usr/bin/env bash
 # Open the current path or file in GitHub
 gho() {
 	local file=$1
@@ -27,4 +26,9 @@ gho() {
 	echo "$url"
 	open "$url"
 }
+export -f gho
 
+function gd() {
+	git diff "$1" | diffnav
+}
+export -f gd

@@ -115,3 +115,6 @@ crash.log
 
 # ignore temporary output files
 output-*/
+
+mise.lock
+.gitignore_global

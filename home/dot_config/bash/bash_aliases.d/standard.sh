@@ -31,3 +31,8 @@ refreshenv() {
 pppath() {
   echo -e "${PATH//:/\\n}"
 }
+
+serve() { 
+  python -m http.server 8000 
+}
+

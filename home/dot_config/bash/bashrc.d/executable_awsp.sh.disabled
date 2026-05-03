@@ -1,0 +1,445 @@
+#!/usr/bin/env bash
+
+AWS_CONFIG_FILE="${HOME}/.aws/config"
+SAML2AWS_CONFIG_FILE="${HOME}/.saml2aws"
+AWSP_PROFILE_FILE="${HOME}/.awsp_profile"
+INFRA_ECR="724772070913.dkr.ecr.us-east-1.amazonaws.com"
+SSO_SESSION_NAME_COMMERCIAL="andesite-eng"
+
+is_sourced() { [[ "${BASH_SOURCE[0]}" != "$0" ]]; }
+
+command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+fail() {
+  echo "$*" >&2
+  if is_sourced; then return 1; else exit 1; fi
+}
+
+need_cmd() {
+  local c
+  for c in "$@"; do
+    command_exists "$c" || { fail "Error: '$c' is not installed."; return 1; }
+  done
+}
+
+check_deps() {
+  need_cmd pulumi aws jq saml2aws
+}
+
+usage() {
+  cat <<'USAGE'
+Usage: awsp {<profile>|bootstrap|list|select|switch|login|logout|kubeconfig} [args...]
+
+Where <profile> is the name of an AWS profile found with the list command.
+
+Commands:
+  bootstrap                 Generate AWS config from Pulumi environments into $AWS_CONFIG_FILE
+  list                      List profiles (requires bootstrapped config)
+  select                    Interactive profile picker; exports when sourced, else prints export line
+  switch                    Switch profile to named passed profile name; exports when sourced, else prints export line
+  login                     AWS SSO login for current $AWS_PROFILE
+  logout                    AWS SSO logout for current $AWS_PROFILE and unset kubectl context
+  kubeconfig                Discover all EKS clusters in the profile's region and create kube contexts
+USAGE
+  if is_sourced; then return 0; else exit 0; fi
+}
+
+assert_bootstrapped() {
+  [[ -f "${SAML2AWS_CONFIG_FILE}" ]] || { fail "saml2aws configuration is not bootstrapped. Run 'awsp bootstrap' first"; return 1; }
+  [[ -f "${AWS_CONFIG_FILE}" ]] || { fail "AWS profiles are not bootstrapped. Run 'awsp bootstrap' first"; return 1; }
+}
+
+require_profile() { : "${AWS_PROFILE:?set AWS_PROFILE}"; }
+
+list_cmd() {
+  check_deps
+  assert_bootstrapped
+  profiles=()
+  while IFS= read -r line; do
+    profiles+=("$line")
+  done < <(aws configure list-profiles)
+
+  for prof in "${profiles[@]}"; do
+    if [[  "$prof" == "$AWS_PROFILE" ]]; then
+        printf "\033[0;32m*%s\033[0m\n" "$prof"
+    else
+        printf "$prof\n"
+    fi
+  done
+}
+
+select_cmd() {
+  check_deps
+  assert_bootstrapped
+
+  profiles=()
+  while IFS= read -r line; do
+    profiles+=("$line")
+  done < <(aws configure list-profiles)
+
+  ((${#profiles[@]})) || { fail "No profiles found"; return 1; }
+
+  PS3="Choose a profile: "
+  select choice in "${profiles[@]}"; do
+    [ -n "$choice" ] && break
+  done
+
+  switch_cmd "${choice}"
+}
+
+switch_cmd() {
+  check_deps
+  assert_bootstrapped
+
+  choice=${1:-}
+
+  if [[ "$choice" == "" ]]; then
+    fail "You must provide a profile to switch to"
+    return 1
+  fi
+
+  aws --profile "${choice}" configure get output > /dev/null || { fail "$choice is not a valid aws profile"; return 1; }
+
+  if is_sourced; then
+    export AWS_PROFILE="${choice}"
+    echo "${choice}" > "${AWSP_PROFILE_FILE}"
+    printf "AWS_PROFILE was set to '%s' in this shell\n" "${choice}"
+    login_cmd
+  else
+    printf '\nIMPORTANT:\nYou need to export the following for this profile to remain active:\nexport AWS_PROFILE=%s\n\n' "${choice}"
+    printf 'Skipping login, please run awsp login after setting the profile\n'
+  fi
+}
+
+# Generates the ~/.saml2aws and ~/.aws/config files
+bootstrap_cmd() {
+  check_deps
+  _bootstrap_saml2aws || return 1
+  _bootstrap_aws || return 1
+}
+
+_bootstrap_saml2aws() {
+  local idp_account_name
+  idp_account_name="andesite-govcloud"
+
+  # Handle existing config file
+  local choice=""
+  if [[ -f "${SAML2AWS_CONFIG_FILE}" ]]; then
+    echo "Existing saml2aws config file found at ${SAML2AWS_CONFIG_FILE}" >&2
+    printf "Do you want to (a)ppend, (o)verwrite, (c)ancel, or (s)kip? [a/o/c/s]: "
+    read -r choice
+    case "$choice" in
+      [Oo])
+        local backup="${SAML2AWS_CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+        echo "Backing up existing saml2aws config to ${backup}" >&2
+        cp "${SAML2AWS_CONFIG_FILE}" "${backup}"
+        ;;
+      [Aa])
+        echo "Will append new profiles to existing config" >&2
+        ;;
+      [Cc])
+        echo "Bootstrap cancelled" >&2
+        return 1
+        ;;
+      [Ss])
+        echo "Skipping creation of saml2aws configuration" >&2
+        return 0
+        ;;
+      *)
+        fail "Invalid choice. Please run again and choose 'a', 'o', 'c' or 's'"
+        return 1
+        ;;
+    esac
+  fi
+
+  local temp_config
+  temp_config=$(mktemp)
+
+  cat >> "${temp_config}" <<EOF
+[${idp_account_name}]
+name                    = ${idp_account_name}
+url                     = https://andesite-threatalert.okta-gov.com/home/amazon_aws/0oa1g1cf9cM3ZzfZk0j7/272
+provider                = Browser
+browser_autofill        = true
+aws_urn                 = urn:amazon:webservices:govcloud
+region                  = us-gov-west-1
+saml_cache              = true
+saml_cache_file         = ${HOME}/.saml2aws.cache
+EOF
+
+  # Write or append to final location
+  if [[ "${choice}" == [Aa] && -f "${SAML2AWS_CONFIG_FILE}" ]]; then
+    cat "${temp_config}" >> "${SAML2AWS_CONFIG_FILE}"
+    rm "${temp_config}"
+    echo "New profiles appended to ${SAML2AWS_CONFIG_FILE}" >&2
+  else
+    mv "${temp_config}" "${SAML2AWS_CONFIG_FILE}"
+    echo "saml2aws config file generated successfully at ${SAML2AWS_CONFIG_FILE}" >&2
+  fi
+
+  chmod u+rw,go-rwx "${SAML2AWS_CONFIG_FILE}"
+}
+
+_bootstrap_aws() {
+  # Handle existing config file
+  local choice=""
+  if [[ -f "${AWS_CONFIG_FILE}" ]]; then
+    echo "Existing AWS config file found at ${AWS_CONFIG_FILE}" >&2
+    printf "Do you want to (a)ppend, (o)verwrite, or (c)ancel? [a/o/c]: "
+    read -r choice
+    case "$choice" in
+      [Oo])
+        local backup="${AWS_CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+        echo "Backing up existing AWS config to ${backup}" >&2
+        cp "${AWS_CONFIG_FILE}" "${backup}"
+        ;;
+      [Aa])
+        echo "Will append new profiles to existing config" >&2
+        ;;
+      [Cc])
+        echo "Bootstrap cancelled" >&2
+        return 1
+        ;;
+      *)
+        fail "Invalid choice. Please run again and choose 'a', 'o', or 'c'"
+        return 1
+        ;;
+    esac
+  fi
+
+  local temp_config
+  temp_config=$(mktemp)
+
+  # Add static dev profiles at the top
+  # Once we have dev defined as a pulumi tenant and with consistent role names we can remove this section
+  _static_profiles >> "${temp_config}"
+
+  echo "Fetching tenant list from Pulumi..." >&2
+  local tenants
+  tenants=$(pulumi env ls -p tenant 2>/dev/null) || { fail "Failed to list Pulumi environments"; return 1; }
+
+  while IFS= read -r tenant_path; do
+    [[ -z "$tenant_path" ]] && continue
+
+    # Extract tenant name (e.g., "demo0" from "andesitercp/tenant/demo0")
+    local tenant_name
+    tenant_name=$(basename "$tenant_path")
+
+    echo "Processing tenant: ${tenant_name}" >&2
+    local env_json
+    env_json=$(pulumi env get "$tenant_path" --value json 2>/dev/null) || {
+      echo "Warning: Could not fetch environment for ${tenant_path}, skipping..." >&2
+      continue
+    }
+
+    # Extract account ID and region using jq
+    local account_id region
+    account_id=$(echo "$env_json" | jq -r '.pulumiConfig.AWS_ACCOUNT_ID // .["aws-'${tenant_name}'"].accountId // empty')
+    region=$(echo "$env_json" | jq -r '.aws.REGION // .pulumiConfig.AWS_REGION // "us-east-1"')
+
+    if [[ -z "$account_id" ]]; then
+      echo "Warning: Could not extract account ID for ${tenant_name}, skipping..." >&2
+      continue
+    fi
+
+    # Generate profiles for this tenant
+    cat >> "${temp_config}" <<EOF
+[profile ${tenant_name}-admin]
+sso_session = ${SSO_SESSION_NAME_COMMERCIAL}
+sso_account_id = ${account_id}
+sso_role_name = AdministratorAccess
+region = ${region}
+output = json
+
+[profile ${tenant_name}-read]
+sso_session = ${SSO_SESSION_NAME_COMMERCIAL}
+sso_account_id = ${account_id}
+sso_role_name = ReadOnlyAccess
+region = ${region}
+output = json
+
+EOF
+  done <<< "$tenants"
+
+  #Derive govcloud accounts
+  local raw_accounts
+  raw_accounts=$(saml2aws --idp-account="andesite-govcloud" --quiet list-roles | paste -d " " - - -) || {
+    echo "Warning: Could not fetch GovCloud accounts." >&2
+    raw_accounts=""
+  }
+  if [[ -z "$raw_accounts" ]]; then
+    echo "Warning: No govcloud accounts found." >&2
+  fi
+  while IFS= read -r account; do
+    local account_id account_name account_role
+    account_id=$(echo -n "$account" | awk '{print $3}' | tr -d '()')
+    account_name=$(echo -n "$account" | awk '{print $2}')
+    account_role=$(echo -n "$account" | awk '{print $4}')
+
+    cat >> "${temp_config}" <<EOF
+[profile ${account_name}]
+gc_account_id = ${account_id}
+gc_role_arn = ${account_role}
+output = json
+
+EOF
+
+  done <<< "$raw_accounts"
+
+  # Write or append to final location
+  if [[ "${choice}" == [Aa] && -f "${AWS_CONFIG_FILE}" ]]; then
+    cat "${temp_config}" >> "${AWS_CONFIG_FILE}"
+    rm "${temp_config}"
+    echo "New profiles appended to ${AWS_CONFIG_FILE}" >&2
+  else
+    mv "${temp_config}" "${AWS_CONFIG_FILE}"
+    echo "AWS config file generated successfully at ${AWS_CONFIG_FILE}" >&2
+  fi
+
+  chmod u+rw,go-rwx "${AWS_CONFIG_FILE}"
+}
+
+login_cmd() {
+  check_deps
+  assert_bootstrapped
+  require_profile
+
+  local govcloud_account
+  govcloud_account="false"
+
+  if aws --profile "${AWS_PROFILE}" configure get gc_account_id > /dev/null 2>&1; then
+    echo "Detected govcloud account" >&2
+    govcloud_account="true"
+  fi
+
+
+  if aws --profile "${AWS_PROFILE}" sts get-caller-identity > /dev/null 2>&1; then
+    echo "Current token valid" >&2
+    return 0
+  fi
+
+  if [[ "${govcloud_account}" == "true" ]]; then
+    local role
+    role="$(aws --profile "${AWS_PROFILE}" configure get gc_role_arn)"
+    saml2aws --idp-account="andesite-govcloud" --quiet login --profile="${AWS_PROFILE}" --role="${role}"
+  else
+    local region account_id
+    region="$(aws configure get region --profile "${AWS_PROFILE}")"
+    account_id="$(aws configure get sso_account_id --profile "${AWS_PROFILE}")"
+    echo "Logging in to ${AWS_PROFILE} (${account_id}/${region})" >&2
+    aws sso login --profile "${AWS_PROFILE}"
+
+    #Log into infra ECR (only for dev profiles)
+    if [[ "${AWS_PROFILE}" == dev-* ]]; then
+      echo "Logging in to docker registry '${INFRA_ECR}'" >&2
+      if ! aws ecr get-login-password | docker login --username AWS --password-stdin "${INFRA_ECR}"; then
+        echo "Warning: Docker login to ECR failed. You may not be able to pull images." >&2
+      fi
+    fi
+  fi
+}
+
+logout_cmd() {
+  check_deps
+  assert_bootstrapped
+  require_profile
+
+  echo "Logging out of AWS SSO session for profile ${AWS_PROFILE}..." >&2
+  aws sso logout --profile "${AWS_PROFILE}" || true
+}
+
+kubeconfig_cmd() {
+  check_deps
+  assert_bootstrapped
+  require_profile
+
+  local region account_id
+  region="$(aws configure get region --profile "${AWS_PROFILE}")"
+  account_id="$(aws configure get sso_account_id --profile "${AWS_PROFILE}")"
+  if [[ "$account_id" == "" ]]; then
+    account_id="$(aws configure get gc_account_id --profile "${AWS_PROFILE}")"
+  fi
+  [[ -n "$region" && -n "$account_id" ]] || { fail "missing region or sso_account_id for profile ${AWS_PROFILE}"; return 1; }
+
+  clusters=()
+  while IFS= read -r line; do
+    clusters+=("$line")
+  done < <(
+    aws eks list-clusters \
+      --region "$region" \
+      --profile "$AWS_PROFILE" \
+      --output json |
+    jq -r '.clusters[]'
+  )
+
+  echo "Configuring clusters: ${clusters[*]:-}" >&2
+  ((${#clusters[@]})) || { echo "no clusters found in ${region} for ${AWS_PROFILE}" >&2; return 0; }
+
+  local c alias
+  for c in "${clusters[@]}"; do
+    alias="${AWS_PROFILE}-${c}--${account_id}-${region}"
+    aws eks update-kubeconfig \
+      --name "$c" \
+      --region "$region" \
+      --profile "$AWS_PROFILE" \
+      --alias "$alias"
+  done
+}
+
+dispatch() {
+  local cmd=${1:-}; [[ $# -gt 0 ]] && shift
+  case "$cmd" in
+    ""|list)        list_cmd "$@" ;;
+    select)         select_cmd "$@" ;;
+    switch)         switch_cmd "$@" ;;
+    bootstrap)      bootstrap_cmd "$@" ;;
+    login)          login_cmd "$@" ;;
+    logout)         logout_cmd "$@" ;;
+    kubeconfig)     kubeconfig_cmd "$@" ;;
+    help|-h|--help) usage ;;
+    *)              switch_cmd "$cmd" ;;
+  esac
+}
+
+_static_profiles() {
+    cat <<EOF
+[sso-session ${SSO_SESSION_NAME_COMMERCIAL}]
+sso_start_url = https://d-9067dd3caa.awsapps.com/start
+sso_region = us-east-1
+sso_registration_scopes = sso:account:access
+
+[profile dev-admin]
+sso_session = ${SSO_SESSION_NAME_COMMERCIAL}
+sso_account_id = 817987145177
+sso_role_name = AdministratorAccess_Dev
+region = us-east-1
+output = json
+
+[profile dev-power]
+sso_session = ${SSO_SESSION_NAME_COMMERCIAL}
+sso_account_id = 817987145177
+sso_role_name = PowerUserAccess_Dev
+region = us-east-1
+output = json
+
+[profile dev-read]
+sso_session = ${SSO_SESSION_NAME_COMMERCIAL}
+sso_account_id = 817987145177
+sso_role_name = ReadOnlyAccess
+region = us-east-1
+output = json
+
+EOF
+}
+
+if is_sourced; then
+  # define a function so users can run commands after `source script.sh`
+  awsp() { dispatch "$@"; }
+  choice=$(cat "${AWSP_PROFILE_FILE}" 2>/dev/null || echo "")
+  if [[ -n "$choice" ]]; then
+    aws --profile "${choice}" configure get output > /dev/null || { fail "invalid profile $choice found in cache file"; return 0; }
+    export AWS_PROFILE="$choice"
+  fi
+else
+  dispatch "$@"
+fi
